@@ -1,0 +1,13 @@
+/* Sistema HR — estilos globales */
+
+/* 1. Tokens del diseño primero (CSS vars + tipografía + badges base) */
+@use 'styles/design-tokens.scss';
+
+/* 1.1 Login (Fase B) */
+@use 'styles/login.scss';
+
+/* 2. PrimeIcons (los seguimos usando para iconografía de PrimeNG) */
+@use 'primeicons/primeicons.css';
+
+/* 3. Estilos de diseño base de la aplicación (Fase C) */
+@use 'styles/design-base.scss';

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es-PE" data-theme="light" data-density="normal">
+    <head>
+        <meta charset="utf-8" />
+        <title>Sistema HR · Recursos Humanos</title>
+        <base href="/" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- Tokens iniciales antes de cargar Angular (evita flash) -->
+        <script>
+          (function () {
+            try {
+              var t = localStorage.getItem('hr.theme');
+              var d = localStorage.getItem('hr.density');
+              var a = localStorage.getItem('hr.accentH');
+              if (t) document.documentElement.setAttribute('data-theme', t);
+              if (d) document.documentElement.setAttribute('data-density', d);
+              if (a) document.documentElement.style.setProperty('--accent-h', a);
+            } catch (e) { /* localStorage no disponible */ }
+          })();
+        </script>
+
+        <!-- Fonts: Geist (sans) + Geist Mono (tabular) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+    </head>
+
+    <body>
+        <app-root></app-root>
+    </body>
+</html>

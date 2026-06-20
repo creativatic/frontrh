@@ -1,0 +1,35 @@
+# Build artifacts
+node_modules
+dist
+.angular
+coverage
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+.DS_Store
+
+# Logs
+*.log
+
+# Docs
+README.md
+CLAUDE.md
+LICENSE.md
+
+# Test config
+karma.conf.js
+
+# Vercel (default Sakai)
+vercel.json

@@ -1,0 +1,136 @@
+/* =============================================================
+   Sistema HR — design tokens
+   Fuente: design/project/styles.css (Claude Design handoff)
+   Variables base + variantes de tema (light/dark) + densidades.
+   ============================================================= */
+
+:root {
+  /* === Palette === */
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f4f4f1;
+  --surface-3: #ebebe6;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --text: #0b1220;
+  --text-soft: #475569;
+  --text-mute: #94a3b8;
+
+  /* === Accent (configurable via tweaks) === */
+  --accent-h: 250;
+  --accent: oklch(0.55 0.14 var(--accent-h));
+  --accent-soft: oklch(0.95 0.04 var(--accent-h));
+  --accent-fg: #ffffff;
+
+  /* === Semantic === */
+  --success: oklch(0.6 0.12 150);
+  --success-soft: oklch(0.95 0.05 150);
+  --warning: oklch(0.7 0.15 70);
+  --warning-soft: oklch(0.96 0.06 70);
+  --danger: oklch(0.58 0.18 25);
+  --danger-soft: oklch(0.96 0.05 25);
+  --info: oklch(0.6 0.1 230);
+  --info-soft: oklch(0.96 0.04 230);
+
+  /* === Radii === */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* === Density (defaults a normal) === */
+  --row-h: 44px;
+  --pad-y: 14px;
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06),
+            0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.08),
+               0 2px 6px rgba(15, 23, 42, 0.06);
+
+  /* === Typography === */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system,
+               'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* === Dark theme === */
+:root[data-theme='dark'] {
+  --bg: #0a0b0f;
+  --surface: #11131a;
+  --surface-2: #161922;
+  --surface-3: #1d2130;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e6e8ee;
+  --text-soft: #9ba4b4;
+  --text-mute: #6b7280;
+  --accent-soft: oklch(0.28 0.06 var(--accent-h));
+}
+
+/* === Densities === */
+:root[data-density='cozy'] {
+  --row-h: 52px;
+  --pad-y: 18px;
+}
+:root[data-density='compact'] {
+  --row-h: 36px;
+  --pad-y: 10px;
+}
+
+/* =============================================================
+   Base body — usa tokens. Las pantallas custom heredan esto.
+   Sakai-NG sigue funcionando con su propio theming (Aura) hasta
+   que las reemplacemos en fases B/C/D.
+   ============================================================= */
+.hr-app,
+.hr-app * {
+  font-family: var(--font-sans);
+}
+
+.hr-app {
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+/* Utilidades de tipografía tabular del diseño */
+.hr-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum', 'ss03';
+}
+.hr-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status badges base — usadas en tablas y listados */
+.hr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.hr-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.hr-badge.no-dot::before { display: none; }
+.hr-badge.success { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.hr-badge.warning { background: var(--warning-soft); color: oklch(0.5 0.15 70); border-color: transparent; }
+.hr-badge.danger  { background: var(--danger-soft);  color: var(--danger);  border-color: transparent; }
+.hr-badge.info    { background: var(--info-soft);    color: var(--info);    border-color: transparent; }
+.hr-badge.neutral { background: var(--surface-2);    color: var(--text-soft); }

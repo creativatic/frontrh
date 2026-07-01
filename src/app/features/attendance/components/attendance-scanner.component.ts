@@ -174,7 +174,7 @@ interface ScanLog {
             </div>
           </div>
 
-          <!-- Simulator Card (For Local developer testing) -->
+          <!-- Simulator Card (For Local developer testing) - Commented out for production
           <div class="hr-glass-card hr-simulator-card">
             <div class="hr-card-title-container">
               <span class="hr-title-dot purple"></span>
@@ -195,7 +195,6 @@ interface ScanLog {
               </select>
             </div>
 
-            <!-- Auto simulated photo button (Visible when no picture is captured) -->
             <div class="hr-form-group" *ngIf="!capturedPhoto()">
               <button class="hr-btn-premium hr-btn-outline w-full" (click)="generateSimulatedPhoto()">
                 <span class="icon">🖼️</span> Generar Fotocheck QR Simulado
@@ -217,6 +216,7 @@ interface ScanLog {
               <span *ngIf="isApiLoading()">Conectando con Servidor...</span>
             </button>
           </div>
+          -->
         </div>
 
         <!-- Right Column: Location & Result Feed -->
@@ -352,7 +352,7 @@ interface ScanLog {
   styles: [`
     .hr-scanner-container {
       padding: 16px;
-      color: #e2e8f0;
+      color: var(--text);
       font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
       max-width: 1200px;
       margin: 0 auto;
@@ -365,26 +365,26 @@ interface ScanLog {
     .hr-badge-guard {
       display: inline-block;
       padding: 4px 10px;
-      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      background: var(--accent);
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 1px;
-      color: #fff;
+      color: var(--accent-fg);
       margin-bottom: 12px;
-      box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 12px var(--accent-soft);
     }
 
     .hr-scanner-title {
       font-size: 28px;
       font-weight: 800;
-      color: #f8fafc;
+      color: var(--text);
       letter-spacing: -0.5px;
       margin: 0 0 8px 0;
     }
 
     .hr-scanner-desc {
-      color: #94a3b8;
+      color: var(--text-soft);
       font-size: 15px;
       max-width: 700px;
       line-height: 1.5;
@@ -400,8 +400,8 @@ interface ScanLog {
 
     .hr-mode-toggle {
       display: flex;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 4px;
       width: 100%;
@@ -418,7 +418,7 @@ interface ScanLog {
       background: transparent;
       border: none;
       border-radius: 8px;
-      color: #94a3b8;
+      color: var(--text-soft);
       font-weight: 600;
       font-size: 14.5px;
       cursor: pointer;
@@ -426,13 +426,13 @@ interface ScanLog {
     }
 
     .hr-mode-tab:hover {
-      color: #e2e8f0;
+      color: var(--text);
     }
 
     .hr-mode-tab.active {
-      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+      background: var(--accent);
+      color: var(--accent-fg);
+      box-shadow: var(--shadow-sm);
     }
 
     .hr-scanner-grid {
@@ -449,22 +449,20 @@ interface ScanLog {
 
     /* Glass Cards */
     .hr-glass-card {
-      background: rgba(30, 41, 59, 0.4);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 24px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .hr-glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+      border-color: var(--accent);
+      box-shadow: var(--shadow-lg);
     }
 
     .hr-card-glow {
@@ -477,16 +475,16 @@ interface ScanLog {
     }
 
     .hr-card-glow.asistencia {
-      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
     }
     .hr-card-glow.desayuno {
-      background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, var(--warning), transparent);
     }
     .hr-card-glow.almuerzo {
-      background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, var(--info), transparent);
     }
     .hr-card-glow.cena {
-      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
     }
 
     /* Refrigerio Sub-card Meal selector */
@@ -498,11 +496,11 @@ interface ScanLog {
     }
 
     .hr-meal-btn {
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 14px 4px;
-      color: #94a3b8;
+      color: var(--text-soft);
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -516,22 +514,22 @@ interface ScanLog {
     .hr-meal-btn .time-range { font-size: 10px; opacity: 0.7; }
 
     .hr-meal-btn.desayuno.active {
-      background: rgba(245, 158, 11, 0.15);
-      border-color: #f59e0b;
-      color: #fbbf24;
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+      background: var(--warning-soft);
+      border-color: var(--warning);
+      color: oklch(0.5 0.15 70);
+      box-shadow: 0 0 15px var(--warning-soft);
     }
     .hr-meal-btn.almuerzo.active {
-      background: rgba(6, 182, 212, 0.15);
-      border-color: #06b6d4;
-      color: #22d3ee;
-      box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+      background: var(--info-soft);
+      border-color: var(--info);
+      color: var(--info);
+      box-shadow: 0 0 15px var(--info-soft);
     }
     .hr-meal-btn.cena.active {
-      background: rgba(168, 85, 247, 0.15);
-      border-color: #a855f7;
-      color: #c084fc;
-      box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-soft);
     }
 
     /* Viewfinder Scanner */
@@ -545,7 +543,7 @@ interface ScanLog {
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-strong);
     }
 
     .hr-video-preview {
@@ -600,7 +598,7 @@ interface ScanLog {
       align-items: center;
       text-align: center;
       padding: 24px;
-      color: #64748b;
+      color: var(--text-mute);
     }
 
     .hr-scanned-overlay {
@@ -647,7 +645,7 @@ interface ScanLog {
     }
 
     .hr-camera-icon {
-      color: #334155;
+      color: var(--text-mute);
       margin-bottom: 16px;
       animation: cameraPulse 2s infinite ease-in-out;
     }
@@ -660,13 +658,13 @@ interface ScanLog {
     .hr-placeholder-txt {
       font-size: 16px;
       font-weight: 600;
-      color: #94a3b8;
+      color: var(--text-mute);
       margin: 0 0 6px 0;
     }
 
     .hr-placeholder-sub {
       font-size: 12px;
-      color: #64748b;
+      color: var(--text-soft);
       max-width: 250px;
       line-height: 1.4;
     }
@@ -735,12 +733,12 @@ interface ScanLog {
 
     .hr-btn-outline {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #e2e8f0;
+      border: 1px solid var(--border-strong);
+      color: var(--text-soft);
     }
     .hr-btn-outline:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: var(--surface-2);
+      border-color: var(--border-strong);
     }
 
     .hr-btn-premium:disabled {
@@ -762,24 +760,24 @@ interface ScanLog {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: #64748b;
+      background: var(--text-mute);
     }
     .hr-title-dot.green { background: #10b981; box-shadow: 0 0 10px #10b981; }
     .hr-title-dot.yellow { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
     .hr-title-dot.red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
     .hr-title-dot.blue { background: #06b6d4; box-shadow: 0 0 10px #06b6d4; }
-    .hr-title-dot.purple { background: #a855f7; box-shadow: 0 0 10px #a855f7; }
+    .hr-title-dot.purple { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
     .hr-simulator-card h3, .hr-location-card h3, .hr-history-card h3 {
       font-size: 16px;
       font-weight: 700;
-      color: #f1f5f9;
+      color: var(--text);
       margin: 0;
     }
 
     .hr-card-info {
       font-size: 13.5px;
-      color: #94a3b8;
+      color: var(--text-soft);
       line-height: 1.45;
       margin: 0 0 18px 0;
     }
@@ -794,43 +792,43 @@ interface ScanLog {
     .hr-form-group label {
       font-size: 13px;
       font-weight: 600;
-      color: #cbd5e1;
+      color: var(--text-soft);
     }
 
     .hr-custom-select {
-      background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #e2e8f0;
+      color: var(--text);
       padding: 10px 14px;
       font-size: 14px;
       outline: none;
       width: 100%;
       transition: border-color 0.2s;
     }
-    .hr-custom-select:focus { border-color: #a855f7; }
+    .hr-custom-select:focus { border-color: var(--accent); }
 
     .hr-token-badge {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(168, 85, 247, 0.08);
-      border: 1px dashed rgba(168, 85, 247, 0.25);
+      background: var(--accent-soft);
+      border: 1px dashed var(--accent);
       border-radius: 8px;
       padding: 10px 14px;
       font-size: 13px;
       margin-bottom: 12px;
     }
-    .hr-token-badge .label { color: #a855f7; font-weight: 600; }
-    .hr-token-badge .value { font-family: monospace; color: #e2e8f0; font-weight: bold; }
+    .hr-token-badge .label { color: var(--accent); font-weight: 600; }
+    .hr-token-badge .value { font-family: monospace; color: var(--text); font-weight: bold; }
 
     /* GPS Coordinates Details */
     .hr-location-details {
-      background: rgba(15, 23, 42, 0.6);
+      background: var(--surface-2);
       border-radius: 10px;
       padding: 16px;
       margin-bottom: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
     }
 
     .hr-gps-loading {
@@ -854,7 +852,7 @@ interface ScanLog {
     .hr-gps-error { display: flex; gap: 12px; color: #ef4444; }
     .hr-gps-error .msg-box { flex: 1; }
     .hr-gps-error strong { font-size: 14px; display: block; margin-bottom: 4px; }
-    .hr-gps-error p { font-size: 12.5px; color: #94a3b8; margin: 0; line-height: 1.4; }
+    .hr-gps-error p { font-size: 12.5px; color: var(--text-soft); margin: 0; line-height: 1.4; }
 
     .hr-gps-success-grid {
       display: grid;
@@ -870,14 +868,14 @@ interface ScanLog {
 
     .coordinate-item.full {
       grid-column: span 2;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--border);
       padding-top: 8px;
       margin-top: 4px;
     }
 
     .coord-lbl {
       font-size: 11px;
-      color: #64748b;
+      color: var(--text-mute);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -886,7 +884,7 @@ interface ScanLog {
     .coord-val {
       font-size: 14px;
       font-family: monospace;
-      color: #f1f5f9;
+      color: var(--text);
       font-weight: 600;
     }
 
@@ -903,12 +901,12 @@ interface ScanLog {
     }
 
     .hr-result-display-card.success {
-      border-color: rgba(16, 185, 129, 0.4);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(30, 41, 59, 0.6) 100%);
+      border-color: var(--success);
+      background: var(--success-soft);
     }
     .hr-result-display-card.error {
-      border-color: rgba(239, 68, 68, 0.4);
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(30, 41, 59, 0.6) 100%);
+      border-color: var(--danger);
+      background: var(--danger-soft);
     }
 
     .hr-result-pulse-ring {
@@ -952,13 +950,13 @@ interface ScanLog {
     .hr-result-time {
       font-size: 12px;
       font-family: monospace;
-      color: #94a3b8;
+      color: var(--text-mute);
     }
 
     .hr-result-name {
       font-size: 22px;
       font-weight: 800;
-      color: #f8fafc;
+      color: var(--text);
       margin: 0 0 6px 0;
       position: relative;
       z-index: 2;
@@ -966,7 +964,7 @@ interface ScanLog {
 
     .hr-result-msg {
       font-size: 14.5px;
-      color: #cbd5e1;
+      color: var(--text-soft);
       line-height: 1.4;
       margin: 0 0 16px 0;
       position: relative;
@@ -984,7 +982,7 @@ interface ScanLog {
       font-size: 11px;
       text-transform: uppercase;
       font-weight: 700;
-      color: #64748b;
+      color: var(--text-mute);
       margin-bottom: 6px;
     }
     .hr-server-photo {
@@ -992,7 +990,7 @@ interface ScanLog {
       height: 180px;
       object-fit: cover;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
     }
 
     .hr-result-footer {
@@ -1000,8 +998,8 @@ interface ScanLog {
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      color: #64748b;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-mute);
+      border-top: 1px solid var(--border);
       padding-top: 12px;
       position: relative;
       z-index: 2;
@@ -1018,13 +1016,13 @@ interface ScanLog {
     .hr-btn-clear {
       background: transparent;
       border: none;
-      color: #64748b;
+      color: var(--text-mute);
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       transition: color 0.2s;
     }
-    .hr-btn-clear:hover { color: #f8fafc; }
+    .hr-btn-clear:hover { color: var(--text); }
 
     .hr-history-list {
       max-height: 280px;
@@ -1040,7 +1038,7 @@ interface ScanLog {
     }
     .hr-empty-history {
       font-size: 13.5px;
-      color: #475569;
+      color: var(--text-soft);
       text-align: center;
     }
 
@@ -1048,10 +1046,10 @@ interface ScanLog {
       display: flex;
       align-items: center;
       gap: 12px;
-      background: rgba(15, 23, 42, 0.3);
+      background: var(--surface-2);
       border-radius: 8px;
       padding: 10px 12px;
-      border-left: 3px solid #64748b;
+      border-left: 3px solid var(--border-strong);
       transition: transform 0.2s;
     }
     .hr-history-item:hover { transform: translateX(2px); }
@@ -1064,7 +1062,7 @@ interface ScanLog {
       height: 40px;
       object-fit: cover;
       border-radius: 6px;
-      background: #0f172a;
+      background: var(--surface-3);
     }
     .hr-hist-icon-fallback {
       width: 40px;
@@ -1073,7 +1071,7 @@ interface ScanLog {
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      background: rgba(15, 23, 42, 0.5);
+      background: var(--surface-3);
       border-radius: 6px;
     }
 
@@ -1084,14 +1082,14 @@ interface ScanLog {
     .hr-hist-name {
       font-size: 13.5px;
       font-weight: 700;
-      color: #e2e8f0;
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .hr-hist-desc {
       font-size: 11.5px;
-      color: #64748b;
+      color: var(--text-soft);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

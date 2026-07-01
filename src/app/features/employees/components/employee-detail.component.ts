@@ -7,6 +7,7 @@ import { Employee, Contract } from '../../../shared/models/hr.models';
 import { HrCurrencyPipe } from '../../../shared/pipes/hr-currency.pipe';
 import { PeDatePipe } from '../../../shared/pipes/pe-date.pipe';
 import { CustomValidators } from '../../../shared/validators/custom-validators';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-employee-detail',
@@ -695,7 +696,7 @@ export class EmployeeDetailComponent implements OnInit {
         const emp = this.employee();
         if (emp?.activeContract?.id) {
             // Invocar descarga del PDF del contrato usando la URL correspondiente
-            window.open(`http://talentcontrol.test/api/v1/contracts/${emp.activeContract.id}/pdf`, '_blank');
+            window.open(`${environment.apiUrl}/contracts/${emp.activeContract.id}/pdf`, '_blank');
         } else {
             alert('No hay un contrato vigente registrado para descargar en formato PDF.');
         }

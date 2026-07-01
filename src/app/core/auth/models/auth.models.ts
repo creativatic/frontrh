@@ -2,6 +2,7 @@ export interface CompanyInfo {
   id: string;
   name: string;
   ruc: string;
+  rolesPermissions?: any;
 }
 
 export interface AuthenticatedUser {

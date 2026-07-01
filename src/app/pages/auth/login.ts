@@ -59,6 +59,9 @@ import { AuthService } from '../../core/auth/services/auth.service';
                                     type="email"
                                     placeholder="admin@rrhh.local"
                                     autocomplete="email"
+                                    autocapitalize="none"
+                                    autocorrect="off"
+                                    spellcheck="false"
                                     required
                                     [(ngModel)]="email" />
                             </div>
@@ -81,6 +84,9 @@ import { AuthService } from '../../core/auth/services/auth.service';
                                     [type]="showPwd() ? 'text' : 'password'"
                                     placeholder="Tu contraseña"
                                     autocomplete="current-password"
+                                    autocapitalize="none"
+                                    autocorrect="off"
+                                    spellcheck="false"
                                     required
                                     minlength="8"
                                     [(ngModel)]="password" />
@@ -177,12 +183,12 @@ export class Login {
         this.loading.set(true);
         try {
             await this.auth.login({
-                email: this.email.trim(),
+                email: this.email.trim().toLowerCase(),
                 password: this.password
             });
             await this.router.navigateByUrl('/');
         } catch (err: any) {
-            const apiMessage = err?.error?.message;
+            const apiMessage = err?.error?.message || err?.error?.error;
             this.errorMessage.set(
                 apiMessage ?? 'No se pudo iniciar sesión. Verifica tu correo y contraseña.'
             );

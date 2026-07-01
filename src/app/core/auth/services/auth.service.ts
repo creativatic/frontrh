@@ -20,6 +20,25 @@ export class AuthService {
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._token() !== null);
 
+  hasPermission(permission: string): boolean {
+    const currentUser = this.user();
+    if (!currentUser) return false;
+
+    const roleKey = (currentUser.role ?? '').toUpperCase();
+    const rolesPermissions = currentUser.company?.rolesPermissions;
+    if (!rolesPermissions) {
+      if (roleKey === 'GUARDIA' && permission === 'acceso_scanner') {
+        return true;
+      }
+      return roleKey === 'ADMIN';
+    }
+
+    const permissionsForRole = rolesPermissions[roleKey];
+    if (!permissionsForRole) return false;
+
+    return permissionsForRole[permission] === true;
+  }
+
   async login(payload: LoginRequest): Promise<void> {
     const response = await firstValueFrom(
       this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload),

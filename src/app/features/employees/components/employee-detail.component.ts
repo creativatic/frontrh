@@ -8,6 +8,7 @@ import { HrCurrencyPipe } from '../../../shared/pipes/hr-currency.pipe';
 import { PeDatePipe } from '../../../shared/pipes/pe-date.pipe';
 import { CustomValidators } from '../../../shared/validators/custom-validators';
 import { environment } from '../../../../environments/environment';
+import { ContractService } from '../../../shared/services/contract.service';
 
 @Component({
     selector: 'app-employee-detail',
@@ -509,6 +510,7 @@ export class EmployeeDetailComponent implements OnInit {
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
     private readonly employeeService = inject(EmployeeService);
+    private readonly contractService = inject(ContractService);
     private readonly fb = inject(FormBuilder);
 
     readonly employee = signal<Employee | null>(null);
@@ -638,6 +640,7 @@ export class EmployeeDetailComponent implements OnInit {
             const response = await this.employeeService.updateEmployee(emp.id, updatedData);
             this.employee.set(response.employee);
             this.editing.set(false);
+            alert('Información corporativa guardada con éxito.');
         } catch (err) {
             console.error('Error al guardar cambios', err);
             alert('No se pudieron guardar los cambios. Intente nuevamente.');
@@ -689,21 +692,152 @@ export class EmployeeDetailComponent implements OnInit {
     }
 
     sendMessage(): void {
-        alert(`Abriendo canal de comunicación con ${this.employee()?.fullName}...`);
+        const emp = this.employee();
+        if (emp && emp.phone) {
+            const formattedPhone = emp.phone.replace(/\D/g, ''); // strip non-numeric
+            const message = encodeURIComponent(`Hola ${emp.firstName}, te saludamos desde la oficina de Recursos Humanos de NOVARIX S.A.C.`);
+            const url = `https://wa.me/51${formattedPhone}?text=${message}`;
+            window.open(url, '_blank');
+        } else {
+            alert('El colaborador no cuenta con un número de celular registrado.');
+        }
     }
 
     downloadContract(): void {
         const emp = this.employee();
         if (emp?.activeContract?.id) {
             // Invocar descarga del PDF del contrato usando la URL correspondiente
-            window.open(`${environment.apiUrl}/contracts/${emp.activeContract.id}/pdf`, '_blank');
+            this.contractService.downloadContractPdf(emp.activeContract.id);
         } else {
             alert('No hay un contrato vigente registrado para descargar en formato PDF.');
         }
     }
 
     dummyDownload(): void {
-        alert('Descargando archivo digitalizado del colaborador (simulado)...');
+        const emp = this.employee();
+        if (!emp) {
+            alert('No hay información del colaborador para descargar.');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert('Por favor habilita las ventanas emergentes (popups) para descargar el archivo.');
+            return;
+        }
+
+        const baseSalaryFormatted = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(emp.basicSalary || 0);
+
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Ficha del Colaborador - ${emp.fullName}</title>
+                <style>
+                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 30px; color: #333; }
+                    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+                    h1 { font-size: 24px; margin: 0; }
+                    .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+                    h2 { font-size: 16px; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-top: 25px; text-transform: uppercase; color: #555; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    td { padding: 8px 10px; font-size: 13px; vertical-align: top; }
+                    td.label { font-weight: bold; width: 30%; color: #666; }
+                    .footer { margin-top: 50px; font-size: 11px; text-align: center; color: #999; border-top: 1px solid #eee; padding-top: 10px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h1>Ficha del Colaborador</h1>
+                        <p>NOVARIX S.A.C. &middot; Área de Recursos Humanos</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <strong>DNI:</strong> ${emp.dni}<br>
+                        <strong>Fecha de impresión:</strong> ${new Date().toLocaleDateString('es-PE')}
+                    </div>
+                </div>
+
+                <h2>Datos Personales</h2>
+                <table>
+                    <tr>
+                        <td class="label">Nombres y Apellidos:</td>
+                        <td>${emp.fullName}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Puesto / Cargo:</td>
+                        <td>${emp.position}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Correo Electrónico:</td>
+                        <td>${emp.email}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Teléfono:</td>
+                        <td>${emp.phone || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Dirección:</td>
+                        <td>${emp.address || 'N/A'}, ${emp.district || ''} - ${emp.province || ''} - ${emp.department || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Grado de Instrucción:</td>
+                        <td>${emp.educationLevel || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Años de Experiencia:</td>
+                        <td>${emp.yearsExperience || '0'} años</td>
+                    </tr>
+                </table>
+
+                <h2>Información de Planilla y Pago</h2>
+                <table>
+                    <tr>
+                        <td class="label">Remuneración Básica:</td>
+                        <td>\${baseSalaryFormatted}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Entidad Bancaria:</td>
+                        <td>${emp.bankName || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Cuenta de Haberes:</td>
+                        <td>${emp.bankAccount || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">CCI (Interbancario):</td>
+                        <td>${emp.cci || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Sistema de Pensión:</td>
+                        <td>${emp.pensionSystem || 'N/A'}</td>
+                    </tr>
+                </table>
+
+                <h2>Contacto de Emergencia</h2>
+                <table>
+                    <tr>
+                        <td class="label">Nombre del Contacto:</td>
+                        <td>${emp.emergencyContactName || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Teléfono de Emergencia:</td>
+                        <td>${emp.emergencyContactPhone || 'N/A'}</td>
+                    </tr>
+                </table>
+
+                <div class="footer">
+                    Este documento es una copia fidedigna de los datos registrados en el sistema de Recursos Humanos de NOVARIX S.A.C.
+                </div>
+
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.close();
+                    };
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 
     async downloadQrCode(): Promise<void> {

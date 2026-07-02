@@ -253,7 +253,81 @@ export class ContractListComponent implements OnInit {
     }
 
     exportPdf(): void {
-        // En una implementación real exportaríamos la tabla actual de contratos
-        alert('Generando reporte PDF completo de contratos...');
+        const data = this.contracts();
+        if (data.length === 0) {
+            alert('No hay contratos registrados para exportar.');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert('Por favor habilita las ventanas emergentes (popups) para exportar el reporte.');
+            return;
+        }
+
+        let rowsHtml = '';
+        data.forEach(c => {
+            const empName = c.employee ? `${c.employee.firstName} ${c.employee.lastName}` : 'N/A';
+            const empDni = c.employee ? c.employee.dni : 'N/A';
+            const empPos = c.employee ? c.employee.position : 'N/A';
+            const salaryFormatted = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(c.salary);
+            rowsHtml += `
+                <tr>
+                    <td>${empName}</td>
+                    <td>${empDni}</td>
+                    <td>${empPos}</td>
+                    <td>${c.nature}</td>
+                    <td>${salaryFormatted}</td>
+                    <td>${c.startDate}</td>
+                    <td>${c.endDate || 'Indefinido'}</td>
+                    <td>${c.status === 'active' ? 'Vigente' : 'Inactivo'}</td>
+                </tr>
+            `;
+        });
+
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Reporte de Contratos - NOVARIX S.A.C.</title>
+                <style>
+                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #333; }
+                    h1 { font-size: 20px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+                    p { font-size: 12px; margin-bottom: 20px; color: #666; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; font-size: 11px; }
+                    th { background-color: #f5f5f5; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+                    tr:nth-child(even) { background-color: #fafafa; }
+                </style>
+            </head>
+            <body>
+                <h1>Reporte de Contratos</h1>
+                <p>NOVARIX S.A.C. &middot; Generado el: ${new Date().toLocaleDateString('es-PE')} &middot; Total contratos: ${data.length}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Colaborador</th>
+                            <th>DNI</th>
+                            <th>Puesto</th>
+                            <th>Naturaleza</th>
+                            <th>Sueldo</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        \${rowsHtml}
+                    </tbody>
+                </table>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.close();
+                    };
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 }

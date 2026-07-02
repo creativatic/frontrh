@@ -507,6 +507,27 @@ export class VacationCalendarComponent implements OnInit {
   }
 
   exportPlan(): void {
-    alert('Exportando plan anual de vacaciones a formato Excel (calendario consolidadado)...');
+    const data = this.leaveRequests();
+    if (data.length === 0) {
+      alert('No hay solicitudes de vacaciones registradas para exportar.');
+      return;
+    }
+    let csv = '\ufeff'; // BOM to support Spanish accents in Excel
+    csv += 'Colaborador,DNI,Tipo de Licencia,Fecha Inicio,Fecha Fin,Estado,Comentarios\n';
+    data.forEach(r => {
+      const empName = r.employee ? `${r.employee.firstName} ${r.employee.lastName}` : 'N/A';
+      const empDni = r.employee ? r.employee.dni : 'N/A';
+      const reasonLabel = this.getReasonLabel(r.reason);
+      csv += `"${empName}","${empDni}","${reasonLabel}","${r.startDate}","${r.endDate}","${r.status === 'approved' ? 'Aprobado' : (r.status === 'pending' ? 'Pendiente' : 'Rechazado')}","${r.reason || ''}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'plan_anual_vacaciones.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 }

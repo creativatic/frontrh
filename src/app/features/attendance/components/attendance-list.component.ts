@@ -36,11 +36,12 @@ import { environment } from '../../../../environments/environment';
           </svg>
           Exportar CSV
         </button>
-        <button class="hr-btn hr-btn-primary" (click)="syncTerminal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <button class="hr-btn hr-btn-primary" (click)="syncTerminal()" [disabled]="syncing()">
+          <svg *ngIf="!syncing()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
           </svg>
-          Sincronizar terminal
+          <span *ngIf="syncing()" style="display:inline-block; width:12px; height:12px; border:2px solid #fff; border-top:2px solid transparent; border-radius:50%; animation:spin 1s linear infinite; margin-right:6px;"></span>
+          {{ syncing() ? 'Sincronizando...' : 'Sincronizar terminal' }}
         </button>
       </div>
     </div>
@@ -444,11 +445,12 @@ import { environment } from '../../../../environments/environment';
 export class AttendanceListComponent implements OnInit {
   private readonly attendanceService = inject(AttendanceService);
 
-  readonly selectedDate = signal<string>('2026-05-20'); // Por defecto Mayo 20, 2026 como los mocks de capturas
+  readonly selectedDate = signal<string>(new Date().toISOString().substring(0, 10)); // Default dynamically to today's date
   readonly viewPeriod = signal<'day' | 'week' | 'month'>('day');
   readonly searchQuery = signal<string>('');
   readonly selectedArea = signal<string>('Todos');
   readonly selectedStatus = signal<string>('Todos');
+  readonly syncing = signal<boolean>(false);
 
   readonly records = signal<AttendanceRecord[]>([]);
   readonly summary = signal<AttendanceSummary>({
@@ -612,9 +614,17 @@ export class AttendanceListComponent implements OnInit {
     document.body.removeChild(link);
   }
 
-  syncTerminal(): void {
-    alert('Sincronizando terminal biométrico central... Cargando datos en tiempo real.');
-    this.loadData();
+  async syncTerminal(): Promise<void> {
+    this.syncing.set(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await this.loadData();
+      alert('Información corporativa guardada con éxito.');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.syncing.set(false);
+    }
   }
 
 

@@ -45,6 +45,12 @@ export const appRoutes: Routes = [
                 loadChildren: () => import('./app/features/reports/reports.routes').then((m) => m.REPORTS_ROUTES)
             },
             {
+                path: 'operaciones',
+                canActivate: [permissionGuard],
+                data: { permission: 'configurar_sistema' },
+                loadChildren: () => import('./app/features/operations/operations.routes').then((m) => m.OPERATIONS_ROUTES)
+            },
+            {
                 path: 'configuracion',
                 canActivate: [permissionGuard],
                 data: { permission: 'configurar_sistema' },

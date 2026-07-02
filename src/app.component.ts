@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule, NavigationError } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -7,4 +7,13 @@ import { RouterModule } from '@angular/router';
     imports: [RouterModule],
     template: `<router-outlet></router-outlet>`
 })
-export class AppComponent {}
+export class AppComponent {
+    constructor() {
+        const router = inject(Router);
+        router.events.subscribe((event) => {
+            if (event instanceof NavigationError) {
+                console.error('ROUTING ERROR:', event.error);
+            }
+        });
+    }
+}

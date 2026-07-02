@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ConfigurationService, CompanyConfig } from '../../../shared/services/configuration.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { UserService, UserDto } from '../../../shared/services/user.service';
+import { ServiceTypeService, ServiceDto } from '../../../shared/services/service-type.service';
+import { LocationService, LocationDto } from '../../../shared/services/location.service';
+import { ScheduleService, ScheduleDto } from '../../../shared/services/schedule.service';
 
 @Component({
   selector: 'app-configuration',
@@ -31,7 +34,22 @@ import { UserService, UserDto } from '../../../shared/services/user.service';
       </button>
       <button class="hr-tab" [class.active]="activeTab() === 'usuarios'" (click)="setTab('usuarios')">
         <span style="display: inline-flex; align-items: center; gap: 6px;">
-          👥 Gestión de Usuarios
+          👥 Usuarios
+        </span>
+      </button>
+      <button class="hr-tab" [class.active]="activeTab() === 'servicios'" (click)="setTab('servicios')">
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          🛡️ Servicios
+        </span>
+      </button>
+      <button class="hr-tab" [class.active]="activeTab() === 'sedes'" (click)="setTab('sedes')">
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          📍 Sedes
+        </span>
+      </button>
+      <button class="hr-tab" [class.active]="activeTab() === 'horarios'" (click)="setTab('horarios')">
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          ⏰ Horarios
         </span>
       </button>
     </div>
@@ -311,6 +329,364 @@ import { UserService, UserDto } from '../../../shared/services/user.service';
         </form>
       </div>
     </div>
+
+    <!-- TAB 4: SERVICIOS -->
+    <div *ngIf="!loadingData() && activeTab() === 'servicios'">
+      <div class="hr-card" style="padding: 24px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text);">Tipos de Servicio</h3>
+            <p style="color: var(--text-soft); font-size: 13px; margin: 4px 0 0 0;">Configura los tipos de servicios de seguridad privada ofrecidos por la empresa.</p>
+          </div>
+          <button class="hr-btn hr-btn-accent" (click)="openAddServiceModal()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+              <span>+</span> Agregar Servicio
+            </span>
+          </button>
+        </div>
+
+        <div class="hr-search-input" style="max-width: 320px; margin-bottom: 20px; border-color: var(--border-strong);">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-3.5-3.5"/>
+            </svg>
+          </span>
+          <input placeholder="Buscar servicio..." [ngModel]="searchTermServices()" (ngModelChange)="searchTermServices.set($event)"/>
+        </div>
+
+        <div *ngIf="loadingServices()" style="display: flex; justify-content: center; align-items: center; height: 120px;">
+          <div class="hr-spinner" style="width: 30px; height: 30px; border-width: 3px;"></div>
+        </div>
+
+        <div *ngIf="!loadingServices()" class="hr-table-wrapper" style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+          <table class="hr-tbl">
+            <thead>
+              <tr>
+                <th>Nombre del Servicio</th>
+                <th>Descripción</th>
+                <th style="width: 100px; text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of getFilteredServices()">
+                <td style="font-weight: 600; color: var(--text);">{{ s.name }}</td>
+                <td style="color: var(--text-soft); max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ s.description || 'Sin descripción' }}</td>
+                <td class="action-cell" style="text-align: right; white-space: nowrap;">
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon" (click)="openEditServiceModal(s)" title="Editar" style="margin-right: 4px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                    </svg>
+                  </button>
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon danger-text" (click)="deleteService(s)" title="Eliminar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="getFilteredServices().length === 0">
+                <td colspan="3" style="text-align: center; color: var(--text-soft); padding: 32px;">No se encontraron servicios.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: SEDES -->
+    <div *ngIf="!loadingData() && activeTab() === 'sedes'">
+      <div class="hr-card" style="padding: 24px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text);">Sedes de Operación</h3>
+            <p style="color: var(--text-soft); font-size: 13px; margin: 4px 0 0 0;">Administra los locales físicos y frentes donde los colaboradores registran asistencia.</p>
+          </div>
+          <button class="hr-btn hr-btn-accent" (click)="openAddLocationModal()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+              <span>+</span> Agregar Sede
+            </span>
+          </button>
+        </div>
+
+        <div class="hr-search-input" style="max-width: 320px; margin-bottom: 20px; border-color: var(--border-strong);">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-3.5-3.5"/>
+            </svg>
+          </span>
+          <input placeholder="Buscar sede..." [ngModel]="searchTermLocations()" (ngModelChange)="searchTermLocations.set($event)"/>
+        </div>
+
+        <div *ngIf="loadingLocations()" style="display: flex; justify-content: center; align-items: center; height: 120px;">
+          <div class="hr-spinner" style="width: 30px; height: 30px; border-width: 3px;"></div>
+        </div>
+
+        <div *ngIf="!loadingLocations()" class="hr-table-wrapper" style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+          <table class="hr-tbl">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre de la Sede</th>
+                <th>Dirección</th>
+                <th>Coordenadas (Lat, Lng)</th>
+                <th>Radio (m)</th>
+                <th style="width: 100px; text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of getFilteredLocations()">
+                <td class="hr-mono" style="font-size: 12px; font-weight: 600;">{{ l.code }}</td>
+                <td style="font-weight: 600; color: var(--text);">{{ l.name }}</td>
+                <td style="color: var(--text-soft);">{{ l.address || '—' }}</td>
+                <td class="hr-mono" style="font-size: 12px;">{{ l.latitude || '—' }}, {{ l.longitude || '—' }}</td>
+                <td>{{ l.radius_meters }}m</td>
+                <td class="action-cell" style="text-align: right; white-space: nowrap;">
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon" (click)="openEditLocationModal(l)" title="Editar" style="margin-right: 4px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                    </svg>
+                  </button>
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon danger-text" (click)="deleteLocation(l)" title="Eliminar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="getFilteredLocations().length === 0">
+                <td colspan="6" style="text-align: center; color: var(--text-soft); padding: 32px;">No se encontraron sedes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: HORARIOS -->
+    <div *ngIf="!loadingData() && activeTab() === 'horarios'">
+      <div class="hr-card" style="padding: 24px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text);">Horarios y Turnos</h3>
+            <p style="color: var(--text-soft); font-size: 13px; margin: 4px 0 0 0;">Configura los turnos de entrada y salida vinculados a sedes y servicios específicos.</p>
+          </div>
+          <button class="hr-btn hr-btn-accent" (click)="openAddScheduleModal()">
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+              <span>+</span> Agregar Horario
+            </span>
+          </button>
+        </div>
+
+        <div class="hr-search-input" style="max-width: 320px; margin-bottom: 20px; border-color: var(--border-strong);">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-3.5-3.5"/>
+            </svg>
+          </span>
+          <input placeholder="Buscar horario..." [ngModel]="searchTermSchedules()" (ngModelChange)="searchTermSchedules.set($event)"/>
+        </div>
+
+        <div *ngIf="loadingSchedules()" style="display: flex; justify-content: center; align-items: center; height: 120px;">
+          <div class="hr-spinner" style="width: 30px; height: 30px; border-width: 3px;"></div>
+        </div>
+
+        <div *ngIf="!loadingSchedules()" class="hr-table-wrapper" style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+          <table class="hr-tbl">
+            <thead>
+              <tr>
+                <th>Horario / Turno</th>
+                <th>Servicio</th>
+                <th>Sede</th>
+                <th>Jornada (Entrada - Salida)</th>
+                <th>Tolerancia (min)</th>
+                <th>Días de Trabajo</th>
+                <th style="width: 100px; text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of getFilteredSchedules()">
+                <td style="font-weight: 600; color: var(--text);">{{ s.name }}</td>
+                <td><span class="hr-badge info no-dot" style="font-size: 11px;">{{ s.service?.name }}</span></td>
+                <td><span class="hr-badge neutral no-dot" style="font-size: 11px;">{{ s.location?.name }}</span></td>
+                <td class="hr-mono" style="font-size: 12.5px; font-weight: 600; color: var(--text);">{{ formatTime(s.start_time) }} - {{ formatTime(s.end_time) }}</td>
+                <td style="text-align: center;">{{ s.grace_minutes }}m</td>
+                <td style="font-size: 11.5px; color: var(--text-soft);">{{ getWorkDaysLabel(s.work_days) }}</td>
+                <td class="action-cell" style="text-align: right; white-space: nowrap;">
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon" (click)="openEditScheduleModal(s)" title="Editar" style="margin-right: 4px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                    </svg>
+                  </button>
+                  <button class="hr-btn hr-btn-ghost hr-btn-icon danger-text" (click)="deleteSchedule(s)" title="Eliminar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="getFilteredSchedules().length === 0">
+                <td colspan="7" style="text-align: center; color: var(--text-soft); padding: 32px;">No se encontraron horarios.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: SERVICIO (ADD / EDIT) -->
+    <div *ngIf="showServiceModal()" class="modal-overlay" (click)="closeServiceModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingService() ? 'Editar Servicio' : 'Agregar Tipo de Servicio' }}</h3>
+          <button class="close-btn" (click)="closeServiceModal()">&times;</button>
+        </div>
+        <form (ngSubmit)="saveService()" #serviceForm="ngForm">
+          <div class="modal-body">
+            <div class="hr-field">
+              <label for="srvName">Nombre del Servicio <span class="req">*</span></label>
+              <input id="srvName" name="name" type="text" [(ngModel)]="serviceModel.name" required placeholder="Ej. Discotecas, Eventos" />
+            </div>
+            <div class="hr-field" style="margin-top: 14px;">
+              <label for="srvDesc">Descripción</label>
+              <textarea id="srvDesc" name="description" [(ngModel)]="serviceModel.description" placeholder="Detalla el tipo de servicio..." style="width: 100%; min-height: 80px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: 13px; resize: vertical;"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer hr-hstack" style="justify-content: flex-end; gap: 10px; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+            <button type="button" class="hr-btn hr-btn-ghost" (click)="closeServiceModal()">Cancelar</button>
+            <button type="submit" class="hr-btn hr-btn-accent" [disabled]="saving() || !serviceForm.valid">
+              {{ saving() ? 'Guardando...' : 'Guardar Servicio' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: SEDE (ADD / EDIT) -->
+    <div *ngIf="showLocationModal()" class="modal-overlay" (click)="closeLocationModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingLocation() ? 'Editar Sede' : 'Agregar Nueva Sede' }}</h3>
+          <button class="close-btn" (click)="closeLocationModal()">&times;</button>
+        </div>
+        <form (ngSubmit)="saveLocation()" #locationForm="ngForm">
+          <div class="modal-body">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+              <div class="hr-field">
+                <label for="locCode">Código <span class="req">*</span></label>
+                <input id="locCode" name="code" type="text" [(ngModel)]="locationModel.code" required placeholder="Ej. TAL-JOYA" />
+              </div>
+              <div class="hr-field">
+                <label for="locName">Nombre de Sede <span class="req">*</span></label>
+                <input id="locName" name="name" type="text" [(ngModel)]="locationModel.name" required placeholder="Ej. Talleres La Joya" />
+              </div>
+            </div>
+            <div class="hr-field" style="margin-top: 14px;">
+              <label for="locAddress">Dirección Física</label>
+              <input id="locAddress" name="address" type="text" [(ngModel)]="locationModel.address" placeholder="Ej. Carretera Panamericana Km 980" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;">
+              <div class="hr-field">
+                <label for="locLat">Latitud</label>
+                <input id="locLat" name="latitude" type="number" step="0.000001" [(ngModel)]="locationModel.latitude" readonly style="background: var(--surface-2); cursor: not-allowed;" />
+              </div>
+              <div class="hr-field">
+                <label for="locLng">Longitud</label>
+                <input id="locLng" name="longitude" type="number" step="0.000001" [(ngModel)]="locationModel.longitude" readonly style="background: var(--surface-2); cursor: not-allowed;" />
+              </div>
+            </div>
+            
+            <div class="hr-field" style="margin-top: 14px;">
+              <label for="locRad">Radio de Tolerancia Geocerca (metros, máx. 20m) <span class="req">*</span></label>
+              <input id="locRad" name="radius_meters" type="number" [(ngModel)]="locationModel.radius_meters" (ngModelChange)="onRadiusChange()" required min="5" max="20" placeholder="Máx 20m" />
+            </div>
+
+            <!-- Leaflet Map Container -->
+            <div class="hr-field" style="margin-top: 14px;">
+              <label style="margin-bottom: 6px; display: block;">Ubicación de Geocerca (Arrastra el marcador azul)</label>
+              <div id="map" style="height: 220px; width: 100%; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+            </div>
+          </div>
+          <div class="modal-footer hr-hstack" style="justify-content: flex-end; gap: 10px; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+            <button type="button" class="hr-btn hr-btn-ghost" (click)="closeLocationModal()">Cancelar</button>
+            <button type="submit" class="hr-btn hr-btn-accent" [disabled]="saving() || !locationForm.valid">
+              {{ saving() ? 'Guardando...' : 'Guardar Sede' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: HORARIO (ADD / EDIT) -->
+    <div *ngIf="showScheduleModal()" class="modal-overlay" (click)="closeScheduleModal()">
+      <div class="modal-card" style="max-width: 500px;" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingSchedule() ? 'Editar Horario' : 'Agregar Horario y Turno' }}</h3>
+          <button class="close-btn" (click)="closeScheduleModal()">&times;</button>
+        </div>
+        <form (ngSubmit)="saveSchedule()" #scheduleForm="ngForm">
+          <div class="modal-body">
+            <div class="hr-field">
+              <label for="schName">Nombre del Turno/Horario <span class="req">*</span></label>
+              <input id="schName" name="name" type="text" [(ngModel)]="scheduleModel.name" required placeholder="Ej. Turno Día Almacén" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;">
+              <div class="hr-field">
+                <label for="schSrv">Servicio Vinculado <span class="req">*</span></label>
+                <select id="schSrv" name="service_id" [(ngModel)]="scheduleModel.service_id" required style="width: 100%; height: 38px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                  <option value="" disabled selected>Selecciona un servicio</option>
+                  <option *ngFor="let s of services()" [value]="s.id">{{ s.name }}</option>
+                </select>
+              </div>
+              <div class="hr-field">
+                <label for="schLoc">Sede Vinculada <span class="req">*</span></label>
+                <select id="schLoc" name="location_id" [(ngModel)]="scheduleModel.location_id" required style="width: 100%; height: 38px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                  <option value="" disabled selected>Selecciona una sede</option>
+                  <option *ngFor="let l of locations()" [value]="l.id">{{ l.name }}</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px;">
+              <div class="hr-field">
+                <label for="schStart">Entrada <span class="req">*</span></label>
+                <input id="schStart" name="start_time" type="text" [(ngModel)]="scheduleModel.start_time" required placeholder="HH:MM" style="width: 100%; box-sizing: border-box;" />
+              </div>
+              <div class="hr-field">
+                <label for="schEnd">Salida <span class="req">*</span></label>
+                <input id="schEnd" name="end_time" type="text" [(ngModel)]="scheduleModel.end_time" required placeholder="HH:MM" style="width: 100%; box-sizing: border-box;" />
+              </div>
+              <div class="hr-field">
+                <label for="schGrace">Tolerancia (min)</label>
+                <input id="schGrace" name="grace_minutes" type="number" [(ngModel)]="scheduleModel.grace_minutes" min="0" placeholder="15" style="width: 100%; box-sizing: border-box;" />
+              </div>
+            </div>
+            <div class="hr-field" style="margin-top: 14px;">
+              <label>Días Laborales <span class="req">*</span></label>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+                <label *ngFor="let d of [
+                  {v: 1, l: 'L'}, {v: 2, l: 'M'}, {v: 3, l: 'X'}, 
+                  {v: 4, l: 'J'}, {v: 5, l: 'V'}, {v: 6, l: 'S'}, {v: 7, l: 'D'}
+                ]" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer;"
+                [style.background]="scheduleModel.work_days.includes(d.v) ? 'var(--accent)' : 'var(--surface-2)'"
+                [style.color]="scheduleModel.work_days.includes(d.v) ? 'var(--accent-contrast)' : 'var(--text)'"
+                [style.font-weight]="'600'"
+                (click)="toggleWorkDay(d.v)">
+                  {{ d.l }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer hr-hstack" style="justify-content: flex-end; gap: 10px; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+            <button type="button" class="hr-btn hr-btn-ghost" (click)="closeScheduleModal()">Cancelar</button>
+            <button type="submit" class="hr-btn hr-btn-accent" [disabled]="saving() || !scheduleForm.valid || scheduleModel.work_days.length === 0">
+              {{ saving() ? 'Guardando...' : 'Guardar Horario' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   `,
   styles: [`
     .success-banner {
@@ -438,8 +814,11 @@ export class ConfigurationComponent implements OnInit {
   private readonly configService = inject(ConfigurationService);
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly serviceTypeService = inject(ServiceTypeService);
+  private readonly locationService = inject(LocationService);
+  private readonly scheduleService = inject(ScheduleService);
 
-  readonly activeTab = signal<'empresa' | 'roles' | 'usuarios'>('empresa');
+  readonly activeTab = signal<'empresa' | 'roles' | 'usuarios' | 'servicios' | 'sedes' | 'horarios'>('empresa');
   readonly loadingData = signal(true);
   readonly saving = signal(false);
   
@@ -454,6 +833,34 @@ export class ConfigurationComponent implements OnInit {
   readonly editingUser = signal<UserDto | null>(null);
   readonly searchTerm = signal('');
   readonly errorModalMessage = signal<string | null>(null);
+
+  // Services State
+  readonly services = signal<ServiceDto[]>([]);
+  readonly loadingServices = signal(false);
+  readonly showServiceModal = signal(false);
+  readonly editingService = signal(false);
+  serviceModel = { id: '', name: '', description: '' };
+  readonly searchTermServices = signal('');
+
+  // Locations State
+  readonly locations = signal<LocationDto[]>([]);
+  readonly loadingLocations = signal(false);
+  readonly showLocationModal = signal(false);
+  readonly editingLocation = signal(false);
+  locationModel = { id: '', code: '', name: '', address: '', latitude: 0, longitude: 0, radius_meters: 20 };
+  readonly searchTermLocations = signal('');
+  
+  leafletMap: any = null;
+  leafletMarker: any = null;
+  leafletCircle: any = null;
+
+  // Schedules State
+  readonly schedules = signal<ScheduleDto[]>([]);
+  readonly loadingSchedules = signal(false);
+  readonly showScheduleModal = signal(false);
+  readonly editingSchedule = signal(false);
+  scheduleModel = { id: '', name: '', service_id: '', location_id: '', start_time: '', end_time: '', grace_minutes: 15, work_days: [] as number[] };
+  readonly searchTermSchedules = signal('');
 
   userModel: UserDto = {
     name: '',
@@ -492,12 +899,20 @@ export class ConfigurationComponent implements OnInit {
     this.loadConfig();
   }
 
-  setTab(tab: 'empresa' | 'roles' | 'usuarios'): void {
+  setTab(tab: 'empresa' | 'roles' | 'usuarios' | 'servicios' | 'sedes' | 'horarios'): void {
     this.activeTab.set(tab);
     this.successMessage.set(null);
     this.errorMessage.set(null);
     if (tab === 'usuarios') {
       this.loadUsers();
+    } else if (tab === 'servicios') {
+      this.loadServices();
+    } else if (tab === 'sedes') {
+      this.loadLocations();
+    } else if (tab === 'horarios') {
+      this.loadServices();
+      this.loadLocations();
+      this.loadSchedules();
     }
   }
 
@@ -722,5 +1137,372 @@ export class ConfigurationComponent implements OnInit {
       configurar_sistema: 'Cambiar datos de empresa, RUC, roles y permisos'
     };
     return descs[key] || '';
+  }
+  // ==========================================
+  // SERVICES CRUD
+  // ==========================================
+  async loadServices(): Promise<void> {
+    this.loadingServices.set(true);
+    try {
+      const res = await this.serviceTypeService.getServices();
+      this.services.set(res.data || res);
+    } catch (err) {
+      console.error('Error loading services:', err);
+    } finally {
+      this.loadingServices.set(false);
+    }
+  }
+
+  openAddServiceModal(): void {
+    this.editingService.set(false);
+    this.serviceModel = { id: '', name: '', description: '' };
+    this.showServiceModal.set(true);
+  }
+
+  openEditServiceModal(service: ServiceDto): void {
+    this.editingService.set(true);
+    this.serviceModel = {
+      id: service.id || '',
+      name: service.name,
+      description: service.description || ''
+    };
+    this.showServiceModal.set(true);
+  }
+
+  closeServiceModal(): void {
+    this.showServiceModal.set(false);
+  }
+
+  async saveService(): Promise<void> {
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
+    try {
+      if (this.editingService()) {
+        await this.serviceTypeService.updateService(this.serviceModel.id, this.serviceModel);
+        this.successMessage.set('Servicio actualizado con éxito.');
+      } else {
+        await this.serviceTypeService.createService(this.serviceModel);
+        this.successMessage.set('Servicio registrado con éxito.');
+      }
+      this.closeServiceModal();
+      this.loadServices();
+    } catch (err: any) {
+      this.errorMessage.set(err.error?.message || 'Error al guardar el servicio.');
+    }
+  }
+
+  async deleteService(service: ServiceDto): Promise<void> {
+    if (!service.id) return;
+    if (confirm(`¿Estás seguro de que deseas eliminar el servicio "${service.name}"?`)) {
+      this.successMessage.set(null);
+      this.errorMessage.set(null);
+      try {
+        await this.serviceTypeService.deleteService(service.id);
+        this.successMessage.set('Servicio eliminado con éxito.');
+        this.loadServices();
+      } catch (err: any) {
+        this.errorMessage.set(err.error?.message || 'No se pudo eliminar el servicio.');
+      }
+    }
+  }
+
+  getFilteredServices(): ServiceDto[] {
+    const s = this.searchTermServices().toLowerCase().trim();
+    if (!s) return this.services();
+    return this.services().filter(item => item.name.toLowerCase().includes(s));
+  }
+
+  // ==========================================
+  // LOCATIONS CRUD
+  // ==========================================
+  async loadLocations(): Promise<void> {
+    this.loadingLocations.set(true);
+    try {
+      const res = await this.locationService.getLocations();
+      this.locations.set(res.data || res);
+    } catch (err) {
+      console.error('Error loading locations:', err);
+    } finally {
+      this.loadingLocations.set(false);
+    }
+  }
+
+  openAddLocationModal(): void {
+    this.editingLocation.set(false);
+    this.locationModel = { 
+      id: '', 
+      code: '', 
+      name: '', 
+      address: '', 
+      latitude: -12.046374, 
+      longitude: -77.042793, 
+      radius_meters: 20 
+    };
+    this.showLocationModal.set(true);
+    this.initMap();
+  }
+
+  openEditLocationModal(loc: LocationDto): void {
+    this.editingLocation.set(true);
+    this.locationModel = {
+      id: loc.id || '',
+      code: loc.code,
+      name: loc.name,
+      address: loc.address || '',
+      latitude: loc.latitude || -12.046374,
+      longitude: loc.longitude || -77.042793,
+      radius_meters: Math.min(loc.radius_meters || 20, 20)
+    };
+    this.showLocationModal.set(true);
+    this.initMap();
+  }
+
+  closeLocationModal(): void {
+    this.showLocationModal.set(false);
+    if (this.leafletMap) {
+      try {
+        this.leafletMap.remove();
+      } catch (e) {}
+      this.leafletMap = null;
+      this.leafletMarker = null;
+      this.leafletCircle = null;
+    }
+  }
+
+  loadLeaflet(): Promise<void> {
+    if ((window as any).L) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
+  }
+
+  initMap(): void {
+    setTimeout(async () => {
+      await this.loadLeaflet();
+      
+      const lat = this.locationModel.latitude || -12.046374;
+      const lng = this.locationModel.longitude || -77.042793;
+      
+      const L = (window as any).L;
+      if (!L) return;
+
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer) return;
+
+      if (this.leafletMap) {
+        try {
+          this.leafletMap.remove();
+        } catch (e) {}
+      }
+
+      this.leafletMap = L.map('map').setView([lat, lng], 17);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(this.leafletMap);
+
+      // Create draggable marker
+      this.leafletMarker = L.marker([lat, lng], { draggable: true }).addTo(this.leafletMap);
+
+      // Create geofence circle (radius max 20m)
+      const rad = Math.min(this.locationModel.radius_meters || 20, 20);
+      this.locationModel.radius_meters = rad;
+      
+      this.leafletCircle = L.circle([lat, lng], {
+        radius: rad,
+        color: '#3b82f6',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.2
+      }).addTo(this.leafletMap);
+
+      // Drag listener
+      this.leafletMarker.on('dragend', () => {
+        const pos = this.leafletMarker.getLatLng();
+        this.locationModel.latitude = Number(pos.lat.toFixed(6));
+        this.locationModel.longitude = Number(pos.lng.toFixed(6));
+        this.leafletCircle.setLatLng(pos);
+      });
+
+      // Map click listener
+      this.leafletMap.on('click', (e: any) => {
+        const pos = e.latlng;
+        this.leafletMarker.setLatLng(pos);
+        this.locationModel.latitude = Number(pos.lat.toFixed(6));
+        this.locationModel.longitude = Number(pos.lng.toFixed(6));
+        this.leafletCircle.setLatLng(pos);
+      });
+    }, 150);
+  }
+
+  onRadiusChange(): void {
+    if (this.locationModel.radius_meters > 20) {
+      this.locationModel.radius_meters = 20;
+    }
+    if (this.leafletCircle) {
+      this.leafletCircle.setRadius(this.locationModel.radius_meters);
+    }
+  }
+
+  async saveLocation(): Promise<void> {
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
+    try {
+      if (this.editingLocation()) {
+        await this.locationService.updateLocation(this.locationModel.id, this.locationModel);
+        this.successMessage.set('Sede actualizada con éxito.');
+      } else {
+        await this.locationService.createLocation(this.locationModel);
+        this.successMessage.set('Sede registrada con éxito.');
+      }
+      this.closeLocationModal();
+      this.loadLocations();
+    } catch (err: any) {
+      this.errorMessage.set(err.error?.message || 'Error al guardar la sede.');
+    }
+  }
+
+  async deleteLocation(loc: LocationDto): Promise<void> {
+    if (!loc.id) return;
+    if (confirm(`¿Estás seguro de que deseas eliminar la sede "${loc.name}"?`)) {
+      this.successMessage.set(null);
+      this.errorMessage.set(null);
+      try {
+        await this.locationService.deleteLocation(loc.id);
+        this.successMessage.set('Sede eliminada con éxito.');
+        this.loadLocations();
+      } catch (err: any) {
+        this.errorMessage.set(err.error?.message || 'No se pudo eliminar la sede.');
+      }
+    }
+  }
+
+  getFilteredLocations(): LocationDto[] {
+    const s = this.searchTermLocations().toLowerCase().trim();
+    if (!s) return this.locations();
+    return this.locations().filter(item => 
+      item.name.toLowerCase().includes(s) || 
+      item.code.toLowerCase().includes(s)
+    );
+  }
+
+  // ==========================================
+  // SCHEDULES CRUD
+  // ==========================================
+  async loadSchedules(): Promise<void> {
+    this.loadingSchedules.set(true);
+    try {
+      const res = await this.scheduleService.getSchedules();
+      this.schedules.set(res.data || res);
+    } catch (err) {
+      console.error('Error loading schedules:', err);
+    } finally {
+      this.loadingSchedules.set(false);
+    }
+  }
+
+  openAddScheduleModal(): void {
+    this.editingSchedule.set(false);
+    this.scheduleModel = {
+      id: '',
+      name: '',
+      service_id: this.services()[0]?.id || '',
+      location_id: this.locations()[0]?.id || '',
+      start_time: '08:00',
+      end_time: '18:00',
+      grace_minutes: 15,
+      work_days: [1, 2, 3, 4, 5, 6]
+    };
+    this.showScheduleModal.set(true);
+  }
+
+  openEditScheduleModal(sched: ScheduleDto): void {
+    this.editingSchedule.set(true);
+    this.scheduleModel = {
+      id: sched.id || '',
+      name: sched.name,
+      service_id: sched.service_id,
+      location_id: sched.location_id,
+      start_time: sched.start_time.slice(0, 5),
+      end_time: sched.end_time.slice(0, 5),
+      grace_minutes: sched.grace_minutes,
+      work_days: [...sched.work_days]
+    };
+    this.showScheduleModal.set(true);
+  }
+
+  closeScheduleModal(): void {
+    this.showScheduleModal.set(false);
+  }
+
+  toggleWorkDay(day: number): void {
+    const idx = this.scheduleModel.work_days.indexOf(day);
+    if (idx > -1) {
+      this.scheduleModel.work_days.splice(idx, 1);
+    } else {
+      this.scheduleModel.work_days.push(day);
+    }
+  }
+
+  async saveSchedule(): Promise<void> {
+    this.successMessage.set(null);
+    this.errorMessage.set(null);
+    try {
+      if (this.editingSchedule()) {
+        await this.scheduleService.updateSchedule(this.scheduleModel.id, this.scheduleModel);
+        this.successMessage.set('Horario actualizado con éxito.');
+      } else {
+        await this.scheduleService.createSchedule(this.scheduleModel);
+        this.successMessage.set('Horario registrado con éxito.');
+      }
+      this.closeScheduleModal();
+      this.loadSchedules();
+    } catch (err: any) {
+      this.errorMessage.set(err.error?.message || 'Error al guardar el horario.');
+    }
+  }
+
+  async deleteSchedule(sched: ScheduleDto): Promise<void> {
+    if (!sched.id) return;
+    if (confirm(`¿Estás seguro de que deseas eliminar el horario "${sched.name}"?`)) {
+      this.successMessage.set(null);
+      this.errorMessage.set(null);
+      try {
+        await this.scheduleService.deleteSchedule(sched.id);
+        this.successMessage.set('Horario eliminado con éxito.');
+        this.loadSchedules();
+      } catch (err: any) {
+        this.errorMessage.set(err.error?.message || 'No se pudo eliminar el horario.');
+      }
+    }
+  }
+
+  getFilteredSchedules(): ScheduleDto[] {
+    const s = this.searchTermSchedules().toLowerCase().trim();
+    if (!s) return this.schedules();
+    return this.schedules().filter(item => item.name.toLowerCase().includes(s));
+  }
+
+  formatTime(time: string): string {
+    if (!time) return '';
+    return time.slice(0, 5);
+  }
+
+  getWorkDaysLabel(days: number[]): string {
+    if (!days || days.length === 0) return 'Ninguno';
+    const dayLabels: Record<number, string> = {
+      1: 'Lun', 2: 'Mar', 3: 'Mié', 4: 'Jue', 5: 'Vie', 6: 'Sáb', 7: 'Dom'
+    };
+    return days.sort().map(d => dayLabels[d]).join(', ');
   }
 }

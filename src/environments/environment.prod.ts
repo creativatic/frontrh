@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://talentcontrol.test/api/v1',
+  apiUrl: 'https://rh-backend.creativatic.com/api/v1',
 };

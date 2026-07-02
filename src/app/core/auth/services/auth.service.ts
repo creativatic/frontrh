@@ -25,18 +25,23 @@ export class AuthService {
     if (!currentUser) return false;
 
     const roleKey = (currentUser.role ?? '').toUpperCase();
+    if (roleKey === 'ADMIN' || roleKey === 'SUPERADMIN') {
+      return true;
+    }
+
     const rolesPermissions = currentUser.company?.rolesPermissions;
     if (!rolesPermissions) {
       if (roleKey === 'GUARDIA' && permission === 'acceso_scanner') {
         return true;
       }
-      return roleKey === 'ADMIN';
+      return false;
     }
 
     const permissionsForRole = rolesPermissions[roleKey];
     if (!permissionsForRole) return false;
 
-    return permissionsForRole[permission] === true;
+    const camelPermission = permission.replace(/(_\w)/g, (m) => m[1].toUpperCase());
+    return permissionsForRole[permission] === true || permissionsForRole[camelPermission] === true;
   }
 
   async login(payload: LoginRequest): Promise<void> {

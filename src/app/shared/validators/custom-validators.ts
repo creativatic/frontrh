@@ -61,4 +61,52 @@ export class CustomValidators {
       return isValid ? null : { phone: true };
     };
   }
+
+  /**
+   * Valida una cuenta bancaria (solo dígitos y guiones).
+   */
+  static bankAccount(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const val = control.value;
+      if (!val) return null;
+      const isValid = /^[0-9-]+$/.test(val);
+      return isValid ? null : { bankAccount: true };
+    };
+  }
+
+  /**
+   * Valida que el CCI tenga exactamente 20 dígitos numéricos.
+   */
+  static cci(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const val = control.value;
+      if (!val) return null;
+      const isValid = /^\d{20}$/.test(val);
+      return isValid ? null : { cci: true };
+    };
+  }
+
+  /**
+   * Valida que el código CUSPP tenga exactamente 12 caracteres alfanuméricos.
+   */
+  static cuspp(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const val = control.value;
+      if (!val) return null;
+      const isValid = /^[a-zA-Z0-9]{12}$/.test(val);
+      return isValid ? null : { cuspp: true };
+    };
+  }
+
+  /**
+   * Valida un formato de teléfono general (números, espacios, guiones, paréntesis y +).
+   */
+  static generalPhone(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const val = control.value;
+      if (!val) return null;
+      const isValid = /^[0-9+\s()-]+$/.test(val);
+      return isValid ? null : { generalPhone: true };
+    };
+  }
 }

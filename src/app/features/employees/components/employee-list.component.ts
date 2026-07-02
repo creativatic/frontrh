@@ -320,11 +320,83 @@ export class EmployeeListComponent implements OnInit {
     }
 
     importData(): void {
-        alert('Cargando modal de importación masiva de colaboradores (formato Excel/CSV)...');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.onchange = async (event: any) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async (e: any) => {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                let count = 0;
+                
+                // Skip header line
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // Simple CSV parser
+                    const cols = line.split(',').map((col: string) => col.replace(/^"|"$/g, '').trim());
+                    if (cols.length < 6) continue;
+                    
+                    const payload = {
+                        dni: cols[0],
+                        firstName: cols[1],
+                        lastName: cols[2],
+                        position: cols[3],
+                        phone: cols[4] || null,
+                        email: cols[5],
+                        address: cols[6] || null,
+                        district: cols[7] || null,
+                        province: cols[8] || null,
+                        department: cols[9] || null,
+                        ubigeoCode: cols[10] || null,
+                        basicSalary: cols[11] ? parseFloat(cols[11]) : 0,
+                    };
+                    
+                    try {
+                        await this.employeeService.createEmployee(payload);
+                        count++;
+                    } catch (err) {
+                        console.error('Error importing row', err);
+                    }
+                }
+                
+                if (count > 0) {
+                    alert(`Importación masiva completada con éxito. Se registraron ${count} colaboradores.`);
+                    await this.loadEmployees();
+                } else {
+                    alert('No se pudieron importar registros. Verifique el formato del archivo CSV.');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 
     exportData(): void {
-        alert('Exportando listado de colaboradores a formato Excel...');
+        const data = this.employees();
+        if (data.length === 0) {
+            alert('No hay colaboradores registrados para exportar.');
+            return;
+        }
+        let csv = '\ufeff'; // BOM to support Spanish accents in Excel
+        csv += 'DNI,Nombres,Apellidos,Puesto,Celular,Correo,Dirección,Distrito,Provincia,Departamento,Ubigeo,Sueldo\n';
+        data.forEach(e => {
+            csv += `"${e.dni}","${e.firstName}","${e.lastName}","${e.position}","${e.phone || ''}","${e.email}","${e.address || ''}","${e.district || ''}","${e.province || ''}","${e.department || ''}","${e.ubigeoCode || ''}",${e.basicSalary || 0}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'listado_colaboradores.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }
 
     printBatchQrs(): void {

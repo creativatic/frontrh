@@ -72,7 +72,7 @@ import { AuthService } from '../../core/auth/services/auth.service';
                     <span>Contratos</span>
                 </a>
 
-                <a *ngIf="hasPermission('ver_asistencia')" class="hr-nav-item" routerLink="/asistencia" routerLinkActive="active">
+                <a *ngIf="hasPermission('ver_asistencia')" class="hr-nav-item" routerLink="/asistencia" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                     <span class="icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="9"/>
@@ -82,6 +82,7 @@ import { AuthService } from '../../core/auth/services/auth.service';
                     <span>Asistencia</span>
                 </a>
 
+                <!--Gestion de Notificaciones 
                 <a *ngIf="hasPermission('ver_asistencia')" class="hr-nav-item" routerLink="/vacaciones" routerLinkActive="active">
                     <span class="icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -96,10 +97,12 @@ import { AuthService } from '../../core/auth/services/auth.service';
                     </span>
                     <span>Gestion de notifiaciones</span>
                 </a>
+                -->
 
                 <!-- Group: Administración -->
                 <div *ngIf="hasPermission('ver_reportes') || hasPermission('configurar_sistema')" class="hr-nav-group-label">Administración</div>
 
+                <!--Grupoad reportes  
                 <a *ngIf="hasPermission('ver_reportes')" class="hr-nav-item" routerLink="/reportes" routerLinkActive="active">
                     <span class="icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -110,6 +113,25 @@ import { AuthService } from '../../core/auth/services/auth.service';
                         </svg>
                     </span>
                     <span>Reportes</span>
+                </a>
+                -->
+                
+                <a *ngIf="hasPermission('configurar_sistema')" class="hr-nav-item" routerLink="/operaciones" routerLinkActive="active">
+                    <span class="icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                            <path d="M8 14h.01"/>
+                            <path d="M12 14h.01"/>
+                            <path d="M16 14h.01"/>
+                            <path d="M8 18h.01"/>
+                            <path d="M12 18h.01"/>
+                            <path d="M16 18h.01"/>
+                        </svg>
+                    </span>
+                    <span>Operaciones</span>
                 </a>
 
                 <a *ngIf="hasPermission('configurar_sistema')" class="hr-nav-item" routerLink="/configuracion" routerLinkActive="active">

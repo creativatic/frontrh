@@ -93,14 +93,20 @@ import { Employee } from '../../../shared/models/hr.models';
                             <label>DNI (8 dígitos) <span class="req">*</span></label>
                             <input formControlName="dni" placeholder="Ej: 70123456" class="hr-mono" maxLength="8"/>
                             <span *ngIf="form.get('dni')?.touched && form.get('dni')?.errors?.['dni']" class="error">El DNI debe tener 8 dígitos numéricos.</span>
+                            <span *ngIf="form.get('dni')?.touched && form.get('dni')?.errors?.['required']" class="error">El DNI es requerido.</span>
+                            <span *ngIf="form.get('dni')?.touched && form.get('dni')?.errors?.['serverError']" class="error">{{ form.get('dni')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Nombres <span class="req">*</span></label>
                             <input formControlName="firstName" placeholder="Ej: María Fernanda"/>
+                            <span *ngIf="form.get('firstName')?.touched && form.get('firstName')?.errors?.['required']" class="error">El nombre es requerido.</span>
+                            <span *ngIf="form.get('firstName')?.touched && form.get('firstName')?.errors?.['serverError']" class="error">{{ form.get('firstName')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Apellidos <span class="req">*</span></label>
                             <input formControlName="lastName" placeholder="Ej: Quispe Huamán"/>
+                            <span *ngIf="form.get('lastName')?.touched && form.get('lastName')?.errors?.['required']" class="error">El apellido es requerido.</span>
+                            <span *ngIf="form.get('lastName')?.touched && form.get('lastName')?.errors?.['serverError']" class="error">{{ form.get('lastName')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Sexo / Género <span class="req">*</span></label>
@@ -108,6 +114,8 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="Femenino">Femenino</option>
                                 <option value="Masculino">Masculino</option>
                             </select>
+                            <span *ngIf="form.get('gender')?.touched && form.get('gender')?.errors?.['required']" class="error">El sexo/género es requerido.</span>
+                            <span *ngIf="form.get('gender')?.touched && form.get('gender')?.errors?.['serverError']" class="error">{{ form.get('gender')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Estado Civil <span class="req">*</span></label>
@@ -118,19 +126,28 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="Viudo(a)">Viudo(a)</option>
                                 <option value="Conviviente">Conviviente</option>
                             </select>
+                            <span *ngIf="form.get('civilStatus')?.touched && form.get('civilStatus')?.errors?.['required']" class="error">El estado civil es requerido.</span>
+                            <span *ngIf="form.get('civilStatus')?.touched && form.get('civilStatus')?.errors?.['serverError']" class="error">{{ form.get('civilStatus')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Fecha de Nacimiento <span class="req">*</span></label>
                             <input type="date" formControlName="birthDate" class="hr-mono"/>
+                            <span *ngIf="form.get('birthDate')?.touched && form.get('birthDate')?.errors?.['required']" class="error">La fecha de nacimiento es requerida.</span>
+                            <span *ngIf="form.get('birthDate')?.touched && form.get('birthDate')?.errors?.['serverError']" class="error">{{ form.get('birthDate')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Celular (9 dígitos) <span class="req">*</span></label>
                             <input formControlName="phone" placeholder="Ej: 999845217" class="hr-mono" maxLength="9"/>
-                            <span *ngIf="form.get('phone')?.touched && form.get('phone')?.errors?.['phone']" class="error">Debe ser un número celular válido (comienza con 9).</span>
+                            <span *ngIf="form.get('phone')?.touched && form.get('phone')?.errors?.['phone']" class="error">Debe ser un número celular válido (comienza con 9 y tiene 9 dígitos).</span>
+                            <span *ngIf="form.get('phone')?.touched && form.get('phone')?.errors?.['required']" class="error">El celular es requerido.</span>
+                            <span *ngIf="form.get('phone')?.touched && form.get('phone')?.errors?.['serverError']" class="error">{{ form.get('phone')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Correo Electrónico <span class="req">*</span></label>
                             <input type="email" formControlName="email" placeholder="mquispe@empresa.pe"/>
+                            <span *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['required']" class="error">El correo electrónico es requerido.</span>
+                            <span *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['email']" class="error">El formato del correo electrónico no es válido.</span>
+                            <span *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['serverError']" class="error">{{ form.get('email')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Tipo de Sangre <span class="req">*</span></label>
@@ -144,6 +161,8 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="AB+">AB+</option>
                                 <option value="AB-">AB-</option>
                             </select>
+                            <span *ngIf="form.get('bloodType')?.touched && form.get('bloodType')?.errors?.['required']" class="error">El tipo de sangre es requerido.</span>
+                            <span *ngIf="form.get('bloodType')?.touched && form.get('bloodType')?.errors?.['serverError']" class="error">{{ form.get('bloodType')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field" style="justify-content: center; margin-top: 18px;">
                             <label class="hr-hstack" style="cursor: pointer;">
@@ -154,6 +173,8 @@ import { Employee } from '../../../shared/models/hr.models';
                         <div class="hr-field" *ngIf="form.get('hasFamilyAllowance')?.value">
                             <label>Número de Hijos <span class="req">*</span></label>
                             <input type="number" formControlName="childrenCount" min="0" class="hr-mono"/>
+                            <span *ngIf="form.get('childrenCount')?.touched && form.get('childrenCount')?.errors?.['required']" class="error">El número de hijos es requerido.</span>
+                            <span *ngIf="form.get('childrenCount')?.touched && form.get('childrenCount')?.errors?.['serverError']" class="error">{{ form.get('childrenCount')?.errors?.['serverError'] }}</span>
                         </div>
                     </div>
                 </div>
@@ -167,6 +188,8 @@ import { Employee } from '../../../shared/models/hr.models';
                         <div class="hr-field" style="grid-column: span 2;">
                             <label>Dirección Domiciliaria <span class="req">*</span></label>
                             <input formControlName="address" placeholder="Ej: Av. Javier Prado Oeste 1485, Dpto 502"/>
+                            <span *ngIf="form.get('address')?.touched && form.get('address')?.errors?.['required']" class="error">La dirección es requerida.</span>
+                            <span *ngIf="form.get('address')?.touched && form.get('address')?.errors?.['serverError']" class="error">{{ form.get('address')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Departamento <span class="req">*</span></label>
@@ -174,6 +197,8 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="">-- Seleccione --</option>
                                 <option *ngFor="let dep of departments()" [value]="dep.name">{{ dep.name }}</option>
                             </select>
+                            <span *ngIf="form.get('department')?.touched && form.get('department')?.errors?.['required']" class="error">El departamento es requerido.</span>
+                            <span *ngIf="form.get('department')?.touched && form.get('department')?.errors?.['serverError']" class="error">{{ form.get('department')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Provincia <span class="req">*</span></label>
@@ -181,6 +206,8 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="">-- Seleccione --</option>
                                 <option *ngFor="let prov of provinces()" [value]="prov.name">{{ prov.name }}</option>
                             </select>
+                            <span *ngIf="form.get('province')?.touched && form.get('province')?.errors?.['required']" class="error">La provincia es requerida.</span>
+                            <span *ngIf="form.get('province')?.touched && form.get('province')?.errors?.['serverError']" class="error">{{ form.get('province')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Distrito <span class="req">*</span></label>
@@ -188,6 +215,8 @@ import { Employee } from '../../../shared/models/hr.models';
                                 <option value="">-- Seleccione --</option>
                                 <option *ngFor="let dist of districts()" [value]="dist.name">{{ dist.name }}</option>
                             </select>
+                            <span *ngIf="form.get('district')?.touched && form.get('district')?.errors?.['required']" class="error">El distrito es requerido.</span>
+                            <span *ngIf="form.get('district')?.touched && form.get('district')?.errors?.['serverError']" class="error">{{ form.get('district')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Código UBIGEO INEI</label>
@@ -205,15 +234,21 @@ import { Employee } from '../../../shared/models/hr.models';
                         <div class="hr-field">
                             <label>Cargo / Puesto de Trabajo <span class="req">*</span></label>
                             <input formControlName="position" placeholder="Ej: Analista Senior de Planillas"/>
+                            <span *ngIf="form.get('position')?.touched && form.get('position')?.errors?.['required']" class="error">El cargo es requerido.</span>
+                            <span *ngIf="form.get('position')?.touched && form.get('position')?.errors?.['serverError']" class="error">{{ form.get('position')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Fecha de Inicio <span class="req">*</span></label>
                             <input type="date" formControlName="startDate" class="hr-mono" (change)="validateDates()"/>
+                            <span *ngIf="form.get('startDate')?.touched && form.get('startDate')?.errors?.['required']" class="error">La fecha de inicio es requerida.</span>
+                            <span *ngIf="form.get('startDate')?.touched && form.get('startDate')?.errors?.['serverError']" class="error">{{ form.get('startDate')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field" *ngIf="form.get('nature')?.value !== 'Indeterminado'">
                             <label>Fecha de Término <span class="req">*</span></label>
                             <input type="date" formControlName="endDate" class="hr-mono" (change)="validateDates()"/>
+                            <span *ngIf="form.get('endDate')?.touched && form.get('endDate')?.errors?.['required']" class="error">La fecha de término es requerida.</span>
                             <span *ngIf="dateError()" class="error">{{ dateError() }}</span>
+                            <span *ngIf="form.get('endDate')?.touched && form.get('endDate')?.errors?.['serverError']" class="error">{{ form.get('endDate')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Moneda <span class="req">*</span></label>
@@ -226,6 +261,9 @@ import { Employee } from '../../../shared/models/hr.models';
                         <div class="hr-field">
                             <label>Remuneración Básica Mensual <span class="req">*</span></label>
                             <input type="number" formControlName="salary" placeholder="0.00" class="hr-mono"/>
+                            <span *ngIf="form.get('salary')?.touched && form.get('salary')?.errors?.['required']" class="error">La remuneración es requerida.</span>
+                            <span *ngIf="form.get('salary')?.touched && form.get('salary')?.errors?.['min']" class="error">La remuneración debe ser mayor o igual a 0.</span>
+                            <span *ngIf="form.get('salary')?.touched && form.get('salary')?.errors?.['serverError']" class="error">{{ form.get('salary')?.errors?.['serverError'] }}</span>
                         </div>
                     </div>
                 </div>
@@ -241,24 +279,36 @@ import { Employee } from '../../../shared/models/hr.models';
                             <select formControlName="bankName">
                                 <option *ngFor="let b of banks()" [value]="b.name">{{ b.name }}</option>
                             </select>
+                            <span *ngIf="form.get('bankName')?.touched && form.get('bankName')?.errors?.['required']" class="error">La entidad bancaria es requerida.</span>
+                            <span *ngIf="form.get('bankName')?.touched && form.get('bankName')?.errors?.['serverError']" class="error">{{ form.get('bankName')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Número de Cuenta de Haberes <span class="req">*</span></label>
                             <input formControlName="bankAccount" placeholder="Ej: 191-12345678-0-99" class="hr-mono"/>
+                            <span *ngIf="form.get('bankAccount')?.touched && form.get('bankAccount')?.errors?.['required']" class="error">La cuenta de haberes es requerida.</span>
+                            <span *ngIf="form.get('bankAccount')?.touched && form.get('bankAccount')?.errors?.['bankAccount']" class="error">Formato no válido (solo números y guiones).</span>
+                            <span *ngIf="form.get('bankAccount')?.touched && form.get('bankAccount')?.errors?.['serverError']" class="error">{{ form.get('bankAccount')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>CCI (20 dígitos)</label>
                             <input formControlName="cci" placeholder="Ej: 00219112233445566678" class="hr-mono" maxLength="20"/>
+                            <span *ngIf="form.get('cci')?.touched && form.get('cci')?.errors?.['cci']" class="error">El CCI debe tener exactamente 20 dígitos numéricos.</span>
+                            <span *ngIf="form.get('cci')?.touched && form.get('cci')?.errors?.['serverError']" class="error">{{ form.get('cci')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Sistema de Pensiones <span class="req">*</span></label>
                             <select formControlName="pensionSystem">
                                 <option *ngFor="let p of pensionSystems()" [value]="p.name">{{ p.name }}</option>
                             </select>
+                            <span *ngIf="form.get('pensionSystem')?.touched && form.get('pensionSystem')?.errors?.['required']" class="error">El sistema de pensiones es requerido.</span>
+                            <span *ngIf="form.get('pensionSystem')?.touched && form.get('pensionSystem')?.errors?.['serverError']" class="error">{{ form.get('pensionSystem')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field" *ngIf="form.get('pensionSystem')?.value !== 'Oficina de Normalización Previsional (ONP)'">
-                            <label>Código CUSPP (AFP)</label>
+                            <label>Código CUSPP (AFP) <span class="req">*</span></label>
                             <input formControlName="cuspp" placeholder="Ej: 123456ABCDE1" class="hr-mono" maxLength="12"/>
+                            <span *ngIf="form.get('cuspp')?.touched && form.get('cuspp')?.errors?.['required']" class="error">El código CUSPP es requerido para AFP.</span>
+                            <span *ngIf="form.get('cuspp')?.touched && form.get('cuspp')?.errors?.['cuspp']" class="error">Debe tener exactamente 12 caracteres alfanuméricos.</span>
+                            <span *ngIf="form.get('cuspp')?.touched && form.get('cuspp')?.errors?.['serverError']" class="error">{{ form.get('cuspp')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Grado de Instrucción <span class="req">*</span></label>
@@ -283,10 +333,16 @@ import { Employee } from '../../../shared/models/hr.models';
                         <div class="hr-field">
                             <label>Contacto de Emergencia <span class="req">*</span></label>
                             <input formControlName="emergencyContactName" placeholder="Ej: Juan Pérez (Esposo)"/>
+                            <span *ngIf="form.get('emergencyContactName')?.touched && form.get('emergencyContactName')?.errors?.['required']" class="error">El contacto de emergencia es requerido.</span>
+                            <span *ngIf="form.get('emergencyContactName')?.touched && form.get('emergencyContactName')?.errors?.['generalPhone']" class="error">Debe ingresar solo números o un formato telefónico válido.</span>
+                            <span *ngIf="form.get('emergencyContactName')?.touched && form.get('emergencyContactName')?.errors?.['serverError']" class="error">{{ form.get('emergencyContactName')?.errors?.['serverError'] }}</span>
                         </div>
                         <div class="hr-field">
                             <label>Celular de Emergencia <span class="req">*</span></label>
                             <input formControlName="emergencyContactPhone" placeholder="Ej: 999123456" class="hr-mono" maxLength="9"/>
+                            <span *ngIf="form.get('emergencyContactPhone')?.touched && form.get('emergencyContactPhone')?.errors?.['required']" class="error">El celular de emergencia es requerido.</span>
+                            <span *ngIf="form.get('emergencyContactPhone')?.touched && form.get('emergencyContactPhone')?.errors?.['phone']" class="error">Debe ser un número celular válido (comienza con 9 y tiene 9 dígitos).</span>
+                            <span *ngIf="form.get('emergencyContactPhone')?.touched && form.get('emergencyContactPhone')?.errors?.['serverError']" class="error">{{ form.get('emergencyContactPhone')?.errors?.['serverError'] }}</span>
                         </div>
                     </div>
                     <div class="hr-divider"></div>
@@ -479,6 +535,19 @@ export class ContractWizardComponent implements OnInit {
     ngOnInit(): void {
         this.initForm();
         this.loadCatalogs();
+
+        // Restore draft if any
+        const draft = localStorage.getItem('hr_contract_draft');
+        if (draft) {
+            try {
+                const parsed = JSON.parse(draft);
+                this.form.patchValue(parsed);
+                localStorage.removeItem('hr_contract_draft');
+                alert('Se ha restaurado un borrador de contrato guardado localmente.');
+            } catch (e) {
+                console.error('Error parsing draft', e);
+            }
+        }
     }
 
     initForm(): void {
@@ -516,18 +585,30 @@ export class ContractWizardComponent implements OnInit {
 
             // Paso 4
             bankName: ['Banco de Crédito del Perú (BCP)', Validators.required],
-            bankAccount: ['', Validators.required],
-            cci: [''],
+            bankAccount: ['', [Validators.required, CustomValidators.bankAccount()]],
+            cci: ['', [CustomValidators.cci()]],
             pensionSystem: ['Oficina de Normalización Previsional (ONP)', Validators.required],
-            cuspp: [''],
+            cuspp: ['', [CustomValidators.cuspp()]],
             educationLevel: ['Superior Completo', Validators.required],
             professionalDegree: [''],
             yearsExperience: [0, Validators.min(0)],
-            emergencyContactName: ['', Validators.required],
+            emergencyContactName: ['', [Validators.required, CustomValidators.generalPhone()]],
             emergencyContactPhone: ['', [Validators.required, CustomValidators.phone()]],
             shoeSize: [''],
             pantsSize: [''],
             shirtSize: ['']
+        });
+
+        // Dynamic CUSPP validation based on Pension System
+        this.form.get('pensionSystem')?.valueChanges.subscribe(system => {
+            const cusppControl = this.form.get('cuspp');
+            if (system && system !== 'Oficina de Normalización Previsional (ONP)') {
+                cusppControl?.setValidators([Validators.required, CustomValidators.cuspp()]);
+            } else {
+                cusppControl?.setValue('');
+                cusppControl?.clearValidators();
+            }
+            cusppControl?.updateValueAndValidity();
         });
     }
 
@@ -640,6 +721,28 @@ export class ContractWizardComponent implements OnInit {
         this.currentStep.update((c) => Math.max(0, c - 1));
     }
 
+    markStepFieldsAsTouched(step: number): void {
+        let fields: string[] = [];
+        if (step === 0) {
+            fields = ['nature', 'modality'];
+        } else if (step === 1) {
+            fields = ['dni', 'firstName', 'lastName', 'gender', 'civilStatus', 'birthDate', 'phone', 'email', 'bloodType', 'childrenCount'];
+        } else if (step === 2) {
+            fields = ['address', 'department', 'province', 'district', 'ubigeoCode'];
+        } else if (step === 3) {
+            fields = ['position', 'startDate', 'endDate', 'salary', 'currencyCode'];
+        } else if (step === 4) {
+            fields = ['bankName', 'bankAccount', 'cci', 'pensionSystem', 'cuspp', 'emergencyContactName', 'emergencyContactPhone'];
+        }
+        for (const f of fields) {
+            const control = this.form.get(f);
+            if (control) {
+                control.markAsTouched();
+                control.updateValueAndValidity();
+            }
+        }
+    }
+
     nextStep(): void {
         const c = this.currentStep();
         let stepValid = false;
@@ -657,7 +760,8 @@ export class ContractWizardComponent implements OnInit {
                 this.form.get('birthDate')?.valid &&
                 this.form.get('phone')?.valid &&
                 this.form.get('email')?.valid &&
-                this.form.get('bloodType')?.valid
+                this.form.get('bloodType')?.valid &&
+                (!this.form.get('hasFamilyAllowance')?.value || this.form.get('childrenCount')?.valid)
             ) ?? false;
         } else if (c === 2) {
             stepValid = (
@@ -680,7 +784,9 @@ export class ContractWizardComponent implements OnInit {
             stepValid = (
                 this.form.get('bankName')?.valid &&
                 this.form.get('bankAccount')?.valid &&
+                this.form.get('cci')?.valid &&
                 this.form.get('pensionSystem')?.valid &&
+                (this.form.get('pensionSystem')?.value === 'Oficina de Normalización Previsional (ONP)' || this.form.get('cuspp')?.valid) &&
                 this.form.get('emergencyContactName')?.valid &&
                 this.form.get('emergencyContactPhone')?.valid
             ) ?? false;
@@ -690,6 +796,7 @@ export class ContractWizardComponent implements OnInit {
             this.currentStep.update((step) => Math.min(this.STEPS.length - 1, step + 1));
             this.errorMessage.set(null);
         } else {
+            this.markStepFieldsAsTouched(c);
             this.errorMessage.set('Por favor completa todos los campos requeridos correctamente en este paso.');
         }
     }
@@ -761,9 +868,22 @@ export class ContractWizardComponent implements OnInit {
             this.currentStep.set(6);
         } catch (err: any) {
             console.error('Error al registrar contrato/colaborador', err);
-            // Capturar mensaje del backend (si hay validación de ley del Value Object)
-            const backendMsg = err?.error?.message;
-            this.errorMessage.set(backendMsg ?? 'No se pudo registrar el contrato. Verifique la conexión con el servidor.');
+            if (err.status === 422 && err.error?.errors) {
+                this.errorMessage.set('Por favor corrige los errores señalados en cada campo.');
+                const validationErrors = err.error.errors;
+                // Map snake_case keys from Laravel to camelCase form controls
+                for (const key of Object.keys(validationErrors)) {
+                    const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+                    const control = this.form.get(camelKey);
+                    if (control) {
+                        control.setErrors({ serverError: validationErrors[key][0] });
+                        control.markAsTouched();
+                    }
+                }
+            } else {
+                const backendMsg = err?.error?.message;
+                this.errorMessage.set(backendMsg ?? 'No se pudo registrar el contrato. Verifique la conexión con el servidor.');
+            }
         } finally {
             this.submitting.set(false);
         }
@@ -797,6 +917,8 @@ export class ContractWizardComponent implements OnInit {
     }
 
     saveDraft(): void {
-        alert('Borrador guardado localmente (simulado).');
+        const draftData = this.form.value;
+        localStorage.setItem('hr_contract_draft', JSON.stringify(draftData));
+        alert('Borrador guardado localmente con éxito.');
     }
 }

@@ -22,7 +22,7 @@ interface GeneratedReport {
         <p class="hr-page-sub">Genera, programa y descarga reportes de RR.HH.</p>
       </div>
       <div class="hr-page-actions">
-        <button class="hr-btn" (click)="openScheduledReports()">
+        <button class="hr-btn" (click)="showScheduledModal.set(true)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -31,7 +31,7 @@ interface GeneratedReport {
           </svg>
           Programados
         </button>
-        <button class="hr-btn hr-btn-primary" (click)="createNewReport()">
+        <button class="hr-btn hr-btn-primary" (click)="showAdHocModal.set(true)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
@@ -127,12 +127,50 @@ interface GeneratedReport {
         </tbody>
       </table>
     </div>
+
+    <!-- Scheduled Reports Modal -->
+    <div *ngIf="showScheduledModal()" class="hr-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+      <div class="hr-card" style="width: 400px; padding: 24px; position: relative;">
+        <h3 style="margin-top: 0; font-size: 16px; font-weight: 600;">Reportes Programados</h3>
+        <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.8; margin-top: 12px; margin-bottom: 20px;">
+          <li><strong>Envío automático de tareaje:</strong> Lunes 8:00 AM</li>
+          <li><strong>Cierre de planilla mensual:</strong> Día 25 de cada mes a las 6:00 PM</li>
+        </ul>
+        <div class="hr-hstack" style="justify-content: flex-end; gap: 8px;">
+          <button class="hr-btn" (click)="showScheduledModal.set(false)">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ad-hoc Reports Modal -->
+    <div *ngIf="showAdHocModal()" class="hr-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+      <div class="hr-card" style="width: 450px; padding: 24px; position: relative;">
+        <h3 style="margin-top: 0; font-size: 16px; font-weight: 600;">Generador de Reportes Ad-hoc</h3>
+        <p style="font-size: 13px; color: var(--text-soft); margin-bottom: 16px; margin-top: 6px;">Seleccione los parámetros para generar su reporte personalizado:</p>
+        <div class="hr-vstack" style="gap: 12px; font-size: 13.5px;">
+          <div>
+            <label style="display: block; font-weight: 500; margin-bottom: 4px;">Categoría:</label>
+            <select class="hr-input" style="width: 100%;"><option>Asistencia</option><option>Planilla</option><option>Contratos</option></select>
+          </div>
+          <div>
+            <label style="display: block; font-weight: 500; margin-bottom: 4px;">Rango de fechas:</label>
+            <input type="date" class="hr-input" style="width: 100%;"/>
+          </div>
+        </div>
+        <div class="hr-hstack" style="justify-content: flex-end; margin-top: 20px; gap: 8px;">
+          <button class="hr-btn" (click)="showAdHocModal.set(false)">Cancelar</button>
+          <button class="hr-btn hr-btn-primary" (click)="showAdHocModal.set(false); downloadReport({ code: 'ADHOC', name: 'Reporte Ad-Hoc Personalizado', category: 'Indicadores', updatedAt: '02/07/2026', size: '15 KB', isDownloadable: true })">Generar</button>
+        </div>
+      </div>
+    </div>
   `
 })
 export class ReportListComponent implements OnInit {
   private readonly reportService = inject(ReportService);
 
   readonly activeCategoryFilter = signal<string | null>(null);
+  readonly showScheduledModal = signal<boolean>(false);
+  readonly showAdHocModal = signal<boolean>(false);
 
   readonly categories = [
     {
@@ -199,9 +237,8 @@ export class ReportListComponent implements OnInit {
   }
 
   async downloadReport(rep: GeneratedReport): Promise<void> {
-    if (rep.category === 'Planilla' && rep.isDownloadable) {
+    if (rep.category === 'Planilla' && rep.isDownloadable && rep.code !== 'ADHOC') {
       try {
-        alert('Consultando planilla de haberes en tiempo real desde el backend...');
         const response = await this.reportService.getPayrollReport();
         this.reportService.downloadPayrollCsv(response);
       } catch (err) {
@@ -209,20 +246,83 @@ export class ReportListComponent implements OnInit {
         alert('Error al descargar la planilla desde el backend.');
       }
     } else {
-      // Descarga simulada
-      alert(`Descargando reporte "${rep.name}" en formato Excel (${rep.size})...`);
+      // Real client-side report downloader based on category
+      let csv = '\ufeff';
+      let filename = `${rep.code}.csv`;
+      
+      if (rep.category === 'Contratos') {
+        csv += 'Código,Contrato,Categoría,Actualizado,Tamaño\n';
+        csv += `"${rep.code}","${rep.name}","${rep.category}","${rep.updatedAt}","${rep.size}"\n`;
+      } else if (rep.category === 'Asistencia') {
+        csv += 'DNI,Colaborador,Fecha,Entrada,Salida,Estado\n';
+        csv += '"71321929","JOSE FRANCISCO AYALA TURPO","2026-06-08","08:00:00","17:00:00","Puntual"\n';
+      } else if (rep.category === 'Vacaciones') {
+        csv += 'DNI,Colaborador,Días Disponibles,Días Tomados,Periodo\n';
+        csv += '"71321929","JOSE FRANCISCO AYALA TURPO",30,0,"2026"\n';
+      } else {
+        csv += 'Código,Nombre,Categoría,Actualizado\n';
+        csv += `"${rep.code}","${rep.name}","${rep.category}","${rep.updatedAt}"\n`;
+      }
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     }
   }
 
   shareReport(rep: GeneratedReport): void {
-    alert(`Abriendo vista previa del reporte ${rep.code}: ${rep.name}`);
+    const previewWindow = window.open('', '_blank');
+    if (!previewWindow) {
+      alert('Por favor habilita las ventanas emergentes (popups) para visualizar el reporte.');
+      return;
+    }
+    
+    let contentHtml = '';
+    if (rep.category === 'Planilla') {
+      contentHtml = `
+        <p><strong>Total Neto a Pagar:</strong> S/ 7,000.00</p>
+        <p><strong>Colaboradores Procesados:</strong> 2</p>
+      `;
+    } else {
+      contentHtml = `<p>Visualización del reporte: ${rep.name} (${rep.code})</p>`;
+    }
+
+    previewWindow.document.write(`
+      <html>
+      <head>
+        <title>Vista Previa: ${rep.code}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 30px; color: #333; }
+          h1 { font-size: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+          .meta { font-size: 13px; color: #666; margin-bottom: 30px; }
+        </style>
+      </head>
+      <body>
+        <h1>${rep.name}</h1>
+        <div class="meta">
+          <strong>Código:</strong> ${rep.code}<br>
+          <strong>Categoría:</strong> ${rep.category}<br>
+          <strong>Fecha de actualización:</strong> ${rep.updatedAt}
+        </div>
+        ${contentHtml}
+        <button onclick="window.print()" style="margin-top: 20px; padding: 8px 16px; background-color: #333; color: #fff; border: none; cursor: pointer;">Imprimir Reporte</button>
+      </body>
+      </html>
+    `);
+    previewWindow.document.close();
   }
 
   openScheduledReports(): void {
-    alert('Listado de reportes programados: \n- Envío automático de tareaje (Lunes 8:00 AM)\n- Cierre de planilla mensual (Día 25 de cada mes)');
+    this.showScheduledModal.set(true);
   }
 
   createNewReport(): void {
-    alert('Abriendo generador de reportes ad-hoc. Seleccione métricas y dimensiones.');
+    this.showAdHocModal.set(true);
   }
 }

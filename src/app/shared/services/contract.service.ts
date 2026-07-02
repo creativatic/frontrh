@@ -3,12 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Contract } from '../models/hr.models';
+import { AuthService } from '../../core/auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   getContracts(employeeId?: string, nature?: string, status?: string, page = 1, perPage = 15): Promise<{ data: Contract[], links?: any, meta?: any }> {
     let params = new HttpParams()
@@ -49,9 +51,8 @@ export class ContractService {
   }
 
   downloadContractPdf(id: string): void {
-    // Para descarga de PDF en producción con autenticación, usualmente abriríamos la URL
-    // con el token en el query string o haríamos una petición blob.
-    // Como simplificación abrimos en pestaña nueva.
-    window.open(`${environment.apiUrl}/contracts/${id}/pdf`, '_blank');
+    const token = this.authService.token();
+    const url = `${environment.apiUrl}/contracts/${id}/pdf?token=${token}`;
+    window.open(url, '_blank');
   }
 }
